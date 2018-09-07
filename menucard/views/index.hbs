@@ -1,0 +1,72 @@
+<h1>{{title}}</h1>
+<p>Welcome to {{title}}</p>
+<form method="post" action="/senddata">
+    <button id="done" type="submit" class="btn btn-default">Done</button>
+</form>
+<div class="col-sm-offset-8"> <h1><span class='glyphicon glyphicon-shopping-cart' ></span><sup id="count">0</sup></h1></div>
+{{CreateMenuCard Foods res_id res_name count}}
+
+<script type="text/javascript">
+    var orderedfood=[];
+    var plus = function(param)
+    {
+        console.log("here");
+        var count= document.getElementById("count");
+        console.log(param.innerHTML+"kolkl");
+        count.innerHTML++;
+        var food_data=param.innerHTML;
+        console.log(food_data);
+        var food_name=food_data.split("$")[0];
+        var food_size=food_data.split("$")[1];
+        var food_price=food_data.split("$")[2];
+        var food={
+            food_name: food_name,
+            food_size:food_size,
+            food_price:food_price
+        };
+        console.log(food);
+        //orderedfood[orderedfood.length] = food;
+        orderedfood.push(food);
+        console.log(orderedfood);
+
+    };
+    var minus = function(param)
+    {
+        var count= document.getElementById("count");
+        console.log(count.innerHTML);
+        count.innerHTML--;
+        var food_data=param.innerHTML;
+        console.log(food_data);
+        var food_name=food_data.split("$")[0];
+        var food_size=food_data.split("$")[1];
+        var food_price=food_data.split("$")[2];
+        // var food={
+        //     food_name: food_name,
+        //     food_size:food_size,
+        //     food_price:food_price
+        // }
+        // orderedfood.splice(orderedfood.indexOf(food),1);
+        // console.log(orderedfood);
+    };
+    $(function(){
+        $('#done').click(function(e) {
+            e.preventDefault();
+            console.log('select_link clicked');
+            var data = {};
+            data.title = "orderdfood";
+            data.orderdfood = orderedfood;
+
+            $.ajax({
+                type: 'POST',
+                data: JSON.stringify(data),
+                contentType: 'application/json',
+                url: 'http://localhost:3000/senddata',
+                success: function (data) {
+                    console.log('success');
+                    console.log(JSON.stringify(data));
+                }
+            });
+        });
+    });
+
+</script>
