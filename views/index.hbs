@@ -8,12 +8,15 @@
 
 <script type="text/javascript">
     var orderedfood=[];
+    var count=0;
+    var countElement= document.getElementById("count");
     var plus = function(param)
     {
         console.log("here");
-        var count= document.getElementById("count");
+        count++;
         console.log(param.innerHTML+"kolkl");
-        count.innerHTML++;
+        countElement.innerHTML=count;
+
         var food_data=param.innerHTML;
         console.log(food_data);
         var food_name=food_data.split("$")[0];
@@ -28,25 +31,36 @@
         //orderedfood[orderedfood.length] = food;
         orderedfood.push(food);
         console.log(orderedfood);
+        return;
 
     };
     var minus = function(param)
     {
-        var count= document.getElementById("count");
-        console.log(count.innerHTML);
-        count.innerHTML--;
+
+        console.log(param.innerHTML);
+
         var food_data=param.innerHTML;
         console.log(food_data);
         var food_name=food_data.split("$")[0];
         var food_size=food_data.split("$")[1];
         var food_price=food_data.split("$")[2];
-        // var food={
-        //     food_name: food_name,
-        //     food_size:food_size,
-        //     food_price:food_price
-        // }
-        // orderedfood.splice(orderedfood.indexOf(food),1);
-        // console.log(orderedfood);
+        var food={
+            food_name: food_name,
+            food_size:food_size,
+            food_price:food_price
+        };
+        for(var a = 0; a < orderedfood.length; a++) {
+            if(orderedfood[a].food_name == food_name && orderedfood[a].food_size== food_size && orderedfood[a].food_price==food_price) {
+                orderedfood.splice(a, 1);
+                a--;
+                count--;
+                countElement.innerHTML=count;
+                break;
+            }
+        }
+        //orderedfood.splice(orderedfood.indexOf(food),1);
+        //console.log(food);
+        console.log(orderedfood);
     };
     $(function(){
         $('#done').click(function(e) {

@@ -12,14 +12,7 @@ router.get('/', function(req, res, next) {
 router.get('/menu/:resturant_name', function(req, res, next) {
     var resturant_name;
     var count=0;
-    if(req.params.resturant_name.split("$").length>1)
-    {
-        resturant_name=req.params.resturant_name.split("$")[0];
-        count=req.params.resturant_name.split("$")[1];
-    }
-    else {
-        resturant_name = req.params.resturant_name;
-    }
+    resturant_name = req.params.resturant_name;
   Resturants.findOne({ 'name' :  resturant_name }, function(err, resturant) {
     var res_id= resturant._id;
     Foods.aggregate([
@@ -36,6 +29,7 @@ router.get('/menu/:resturant_name', function(req, res, next) {
           else {
             //console.log(Foods);
             //console.log(res_id);
+
             res.render('index', { Foods:Foods,count:count,res_id:res_id,res_name:resturant_name,title: 'Express' });
 
           }
@@ -51,32 +45,8 @@ router.post('/menuplus', function(req, res, next) {
     res.send(req.body);
 
 });
-function plus() {
-
-    
-}
 
 var orderedfood=[];
-function orderplus(food_name,food_size,food_price){
-    var food={
-        food_name: food_name,
-        food_size:food_size,
-        food_price:food_price
-    }
-    //orderedfood[orderedfood.length] = food;
-    orderedfood.push(food);
-    console.log(orderedfood);
-
-}
-function orderminus(food_name,food_size,food_price){
-    var food={
-        food_name: food_name,
-        food_size:food_size,
-        food_price:food_price
-    }
-    orderedfood.splice(orderedfood.indexOf(food),1);
-    console.log(orderedfood);
-}
 router.post('/senddata', function(req, res){
     var obj = {};
     orderedfood=req.body.message;
@@ -85,7 +55,11 @@ router.post('/senddata', function(req, res){
 });
 
 
+
 Handlebars.registerHelper('CreateMenuCard',function (Foods,Res_id,res_name,count) {
+    if(Foods.length < 1 || Foods == undefined){
+        return new Handlebars.SafeString("");
+    }
     var page="<div class='row'><div class='col-xs-8 col-sm-8'><h2>"+res_name+"</h2></div><div class='col-xs-4 col-sm-4'><h1>" +
         "</h1>"+
         "</div> </div> ";
@@ -102,10 +76,10 @@ Handlebars.registerHelper('CreateMenuCard',function (Foods,Res_id,res_name,count
                 food.food_size.forEach((food_size,inde) =>{
                     var param="food_data"+ind+""+index+""+inde;
                     console.log(param);
-                   page+=  "<form method='get'><div class='col-xs-2 col-sm-2' >"+ food_size.size+" $"+ food_size.price+"</div> "+
+                   page+=  "<div class='col-xs-2 col-sm-2' >"+ food_size.size+" $"+ food_size.price+"</div> "+
                     "<div class='col-xs-5 col-sm-4'><button class='btn btn-success' onclick='plus("+param+")'><span class='glyphicon glyphicon-plus'></span><div id='"+param+"' hidden>"+food.food_name+"$"+food_size.size+"$"+food_size.price+"</div></button>"+
                     "<button class='btn btn-danger' onclick='minus("+param+")'><span class='glyphicon glyphicon-minus'></span><div id='food_data' hidden>"+food.food_name+"$"+food_size.size+"$"+food_size.price+"</div></button></div>"+
-                    "</form>";
+                    "";
                 });
             }
             page+= "</div>";
