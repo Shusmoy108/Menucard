@@ -1,22 +1,23 @@
-<h1>{{title}}</h1>
-<p>Welcome to {{title}}</p>
-<form method="post" action="/senddata">
-    <button id="done" type="submit" class="btn btn-default">Done</button>
-</form>
-<div class="col-sm-offset-8"> <h1><span class='glyphicon glyphicon-shopping-cart' ></span><sup id="count">0</sup></h1></div>
-{{CreateMenuCard Foods res_id res_name count}}
+<div style="display: flex;">
+    <h2 style="flex: 1">{{res_name}} </h2>
+    <h2 style="padding-right : 10px;"><span class='glyphicon glyphicon-shopping-cart' ></span><sup id="count">0</sup></h2>
+</div>
 
+{{CreateMenuCard Foods res_id res_name count}}
+<form method="post" action="/senddata">
+    <button id="done" type="submit" class="btn btn-danger" style="width:100%; position: fixed; bottom: 5px;left: 0px;">Done</button>
+</form>
 <script type="text/javascript">
     var orderedfood=[];
     var count=0;
     var countElement= document.getElementById("count");
     var plus = function(param)
     {
-        console.log("here");
+        console.log("here"+param);
         count++;
         console.log(param.innerHTML+"kolkl");
         countElement.innerHTML=count;
-
+        var mins= "minus"+param.id.split("$")[1];
         var food_data=param.innerHTML;
         console.log(food_data);
         var food_name=food_data.split("$")[0];
@@ -31,6 +32,10 @@
         //orderedfood[orderedfood.length] = food;
         orderedfood.push(food);
         console.log(orderedfood);
+        console.log(mins);
+        console.log(document.getElementById(mins).innerHTML);
+        document.getElementById(mins).style.visibility = "visible";
+
         return;
 
     };
@@ -38,7 +43,7 @@
     {
 
         console.log(param.innerHTML);
-
+        var mins= "minus"+param.id.split("$")[1];
         var food_data=param.innerHTML;
         console.log(food_data);
         var food_name=food_data.split("$")[0];
@@ -49,17 +54,29 @@
             food_size:food_size,
             food_price:food_price
         };
+        var f=1;
         for(var a = 0; a < orderedfood.length; a++) {
             if(orderedfood[a].food_name == food_name && orderedfood[a].food_size== food_size && orderedfood[a].food_price==food_price) {
                 orderedfood.splice(a, 1);
-                a--;
+                //a--;
                 count--;
                 countElement.innerHTML=count;
+                var f=1;
+                for(var b=a; b < orderedfood.length; b++) {
+                    console.log(f);
+                    if(orderedfood[b].food_name == food_name && orderedfood[b].food_size== food_size && orderedfood[b].food_price==food_price) {
+                        f = 0;
+                        break;
+                    }
+                }
+                if(f==1){
+                    document.getElementById(mins).style.visibility = "hidden";
+                }
                 break;
             }
         }
         //orderedfood.splice(orderedfood.indexOf(food),1);
-        //console.log(food);
+
         console.log(orderedfood);
     };
     $(function(){

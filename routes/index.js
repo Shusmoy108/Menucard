@@ -60,29 +60,44 @@ Handlebars.registerHelper('CreateMenuCard',function (Foods,Res_id,res_name,count
     if(Foods.length < 1 || Foods == undefined){
         return new Handlebars.SafeString("");
     }
-    var page="<div class='row'><div class='col-xs-8 col-sm-8'><h2>"+res_name+"</h2></div><div class='col-xs-4 col-sm-4'><h1>" +
-        "</h1>"+
-        "</div> </div> ";
+    var page="";
+
     Foods.forEach((food, index) => {
-        page+="<div><h3>"+ food._id+"</h3>";
+        page+="<div><h3>"+ food._id+"</h3></div>";
         food.entries.forEach((food, ind) => {
-            page+="<div class='row'>" +
-                "<div class='col-xs-5 col-sm-6'>" +
-                "<h4 id='food_name'>"+food.food_name+"</h4>"+
-                "<h6>"+ food.desc+"</h6>"+
+            page+="<div class='row' style='margin: 5px 0px; '>" +
+                "<div class='col-xs-4 col-sm-6'>" +
+                " <div style='font-size: 15px; font-style: bold' id='food_name'>"+food.food_name+"</div>"+
+                "<div style='font-size: 10px; color: #263238;'>"+ food.desc+"</div>"+
                 "</div>";
             if(Array.isArray(food.food_size)){
                 page+="";
+                var f=1;
                 food.food_size.forEach((food_size,inde) =>{
-                    var param="food_data"+ind+""+index+""+inde;
+                    var param="food_data$"+ind+""+index+""+inde;
+                    var minus="minus"+ind+""+index+""+inde;
                     console.log(param);
-                   page+=  "<div class='col-xs-2 col-sm-2' >"+ food_size.size+" $"+ food_size.price+"</div> "+
-                    "<div class='col-xs-5 col-sm-4'><button class='btn btn-success' onclick='plus("+param+")'><span class='glyphicon glyphicon-plus'></span><div id='"+param+"' hidden>"+food.food_name+"$"+food_size.size+"$"+food_size.price+"</div></button>"+
-                    "<button class='btn btn-danger' onclick='minus("+param+")'><span class='glyphicon glyphicon-minus'></span><div id='food_data' hidden>"+food.food_name+"$"+food_size.size+"$"+food_size.price+"</div></button></div>"+
-                    "";
+                    if(food.food_size.length>1){
+                        if(f==1){
+                            page+="<div class='col-xs-8 col-sm-6'>";
+                            f=0;
+                        }
+                        page += "<div class='row'> <div class='col-xs-3 col-sm-2' style='font-size: 12px;padding-top: 5px;' >" + food_size.size  + "</div> " +
+                            "<div class='col-xs-3 col-sm-2' style='font-size: 12px;padding-top: 5px;'  >"+ "৳" + food_size.price + "</div> " +
+                            "<div class='col-xs-6 col-sm-6' style='margin-bottom: 5px;' ><button class='btn btn-success' onclick='plus(" + param + ")'><span class='glyphicon glyphicon-plus'></span><div id='" + param + "' hidden>" + food.food_name + "$" + food_size.size + "$" + food_size.price + "</div></button>" +
+                            "<button style='visibility : hidden;' id='" + minus + "' class='btn btn-danger' onclick='minus(" + param + ")'><span class='glyphicon glyphicon-minus'></span></button><div id='food_data' hidden>" + food.food_name + "$" + food_size.size + "$" + food_size.price + "</div></div></div>" ;
+
+                    }
+                    else {
+                        page += "<div class='col-xs-2 col-sm-1' style='font-size: 12px;padding-top: 5px;' >" + food_size.size + "</div> " +
+                            "<div class='col-xs-2 col-sm-1' style='font-size: 12px;padding-top: 5px;' >" + " ৳" + food_size.price + "</div> " +
+                            "<div class='col-xs-4 col-sm-4'><button class='btn btn-success' onclick='plus(" + param + ")'><span class='glyphicon glyphicon-plus'></span><div id='" + param + "' hidden>" + food.food_name + "$" + food_size.size + "$" + food_size.price + "</div></button>" +
+                            "<button style='visibility : hidden;' id='" + minus + "' class='btn btn-danger' onclick='minus(" + param + ")'><span class='glyphicon glyphicon-minus'></span></button><div id='food_data' hidden>" + food.food_name + "$" + food_size.size + "$" + food_size.price + "</div></div>" +
+                            "";
+                    }
                 });
+                page+= "</div>";
             }
-            page+= "</div>";
         });
         page+="</div>"
     });
