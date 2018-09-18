@@ -14,6 +14,10 @@ router.get('/menu/:resturant_name', function(req, res, next) {
     var count=0;
     resturant_name = req.params.resturant_name;
   Resturants.findOne({ 'name' :  resturant_name }, function(err, resturant) {
+      if(!resturant){
+          res.redirect('/');
+          return;
+      }
     var res_id= resturant._id;
     Foods.aggregate([
           {
@@ -24,26 +28,19 @@ router.get('/menu/:resturant_name', function(req, res, next) {
           }
       ], function (err, Foods) {
           if (err) {
-              cb(err, null);
+              res.redirect('/');
+              return;
           }
           else {
             //console.log(Foods);
             //console.log(res_id);
 
-            res.render('index', { Foods:Foods,count:count,res_id:res_id,res_name:resturant_name,title: 'Express' });
+            res.render('menucard', { Foods:Foods,count:count,res_id:res_id,res_name:resturant_name,title: 'Express' });
 
           }
       });
 
   });
-});
-router.post('/menuplus', function(req, res, next) {
-
-    var data= req.body.data.split("$");
-    orderplus(data[0],data[1],data[2]);
-    console.log();
-    res.send(req.body);
-
 });
 
 var orderedfood=[];
@@ -76,7 +73,7 @@ Handlebars.registerHelper('CreateMenuCard',function (Foods,Res_id,res_name,count
                 food.food_size.forEach((food_size,inde) =>{
                     var param="food_data$"+ind+""+index+""+inde;
                     var minus="minus"+ind+""+index+""+inde;
-                    console.log(param);
+                    //console.log(param);
                     if(food.food_size.length>1){
                         if(f==1){
                             page+="<div class='col-xs-8 col-sm-6'>";
@@ -101,7 +98,7 @@ Handlebars.registerHelper('CreateMenuCard',function (Foods,Res_id,res_name,count
         });
         page+="</div>"
     });
-    console.log(page);
+    ///console.log(page);
     return new Handlebars.SafeString(page);
 
 });

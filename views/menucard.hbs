@@ -1,0 +1,145 @@
+<div style="display: flex;">
+    <h2 style="flex: 1">{{res_name}} </h2>
+    <h2 style="padding-right : 10px;"><span class='glyphicon glyphicon-shopping-cart' ></span><sup id="count">0</sup></h2>
+</div>
+
+{{CreateMenuCard Foods res_id res_name count}}
+<form method="post" action="/senddata">
+    <button id="done" type="submit" class="btn btn-danger" style="width:100%; position: fixed; bottom: 5px;left: 0px;">Done</button>
+</form>
+<script type="text/javascript">
+    var orderedfood=[];
+    var count=0;
+    var countElement= document.getElementById("count");
+    var plus = function(param)
+    {
+        console.log("here"+param);
+        count++;
+        console.log(param.innerHTML+"kolkl");
+        countElement.innerHTML=count;
+        var mins= "minus"+param.id.split("$")[1];
+        var food_data=param.innerHTML;
+        console.log(food_data);
+        var food_name=food_data.split("$")[0];
+        var food_size=food_data.split("$")[1];
+        var food_price=food_data.split("$")[2];
+        var food={
+            food_name: food_name,
+            food_size:food_size,
+            food_price:food_price
+        };
+        console.log(food);
+        //orderedfood[orderedfood.length] = food;
+        orderedfood.push(food);
+        console.log(orderedfood);
+        console.log(mins);
+        console.log(document.getElementById(mins).innerHTML);
+        document.getElementById(mins).style.visibility = "visible";
+
+        return;
+
+    };
+    var minus = function(param)
+    {
+
+        console.log(param.innerHTML);
+        var mins= "minus"+param.id.split("$")[1];
+        var food_data=param.innerHTML;
+        console.log(food_data);
+        var food_name=food_data.split("$")[0];
+        var food_size=food_data.split("$")[1];
+        var food_price=food_data.split("$")[2];
+        var food={
+            food_name: food_name,
+            food_size:food_size,
+            food_price:food_price
+        };
+        var f=1;
+        for(var a = 0; a < orderedfood.length; a++) {
+            if(orderedfood[a].food_name == food_name && orderedfood[a].food_size== food_size && orderedfood[a].food_price==food_price) {
+                orderedfood.splice(a, 1);
+                //a--;
+                count--;
+                countElement.innerHTML=count;
+                var f=1;
+                for(var b=a; b < orderedfood.length; b++) {
+                    console.log(f);
+                    if(orderedfood[b].food_name == food_name && orderedfood[b].food_size== food_size && orderedfood[b].food_price==food_price) {
+                        f = 0;
+                        break;
+                    }
+                }
+                if(f==1){
+                    document.getElementById(mins).style.visibility = "hidden";
+                }
+                break;
+            }
+        }
+        //orderedfood.splice(orderedfood.indexOf(food),1);
+
+        console.log(orderedfood);
+    };
+    $(function(){
+        $('#done').click(function(e) {
+            e.preventDefault();
+            console.log('select_link clicked');
+            var data = {};
+            data.title = "orderdfood";
+            data.orderdfood = orderedfood;
+
+            $.ajax({
+                type: 'POST',
+                data: JSON.stringify(data),
+                contentType: 'application/json',
+                url: 'http://localhost:3000/senddata',
+                success: function (data) {
+                    console.log('success');
+                    console.log(JSON.stringify(data));
+                }
+            });
+        });
+    });
+
+</script>
+<script>
+    (function (d, s, id) {
+        var js, fjs = d.getElementsByTagName(s)[0];
+        if (d.getElementById(id)) {
+            return;
+        }
+        js = d.createElement(s);
+        js.id = id;
+        js.src = "//connect.facebook.com/en_US/messenger.Extensions.js";
+        fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'Messenger'));
+
+    window.extAsyncInit = () => {
+        // TODO: How to parse env file from here?
+        MessengerExtensions.getSupportedFeatures(function success(result) {
+            let features = result.supported_features;
+            if (features.includes("context")) {
+                MessengerExtensions.getContext('1794887400602479',
+                        function success(thread_context) {
+                            // success
+                            document.getElementById("psid").value = thread_context.psid;
+                        },
+                        function error(err) {
+                            // error
+                            console.log(err);
+                        }
+                );
+            }
+        }, function error(err) {
+            // error retrieving supported features
+            console.log(err);
+        });
+        document.getElementById('submitButton').addEventListener('click', () => {
+            MessengerExtensions.requestCloseBrowser(function success() {
+                console.log("Webview closing");
+            }, function error(err) {
+                console.log(err);
+            });
+        });
+    };
+
+</script>
